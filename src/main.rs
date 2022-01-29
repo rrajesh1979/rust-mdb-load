@@ -2,7 +2,10 @@
 extern crate log;
 extern crate log4rs;
 
+use std::error::Error;
 use clap::Parser;
+use mongodb::bson::{doc, Document};
+use mongodb::{Client, options::ClientOptions};
 
 /// Load generator for MongoDB Atlas built using Rust
 #[derive(Parser, Debug)]
@@ -61,11 +64,26 @@ struct Opt {
     binary: Option<bool>,
 }
 
-fn main() {
+#[tokio::main]
+async fn main()  -> Result<(), Box<dyn Error + Send + Sync>> {
     log4rs::init_file("log4rs.yaml", Default::default()).unwrap();
 
     info!("Initializing MongoDB load generator!");
 
     let opt = Opt::parse();
     println!("{:#?}", opt);
+
+    mongodb_load_gen().await
+}
+
+pub async fn mongodb_load_gen() -> Result<(), Box<dyn Error + Send + Sync>> {
+    let client = Client::with_uri_str("mongodb://localhost:27017/?readPreference=primary&appname=MongoDB%20Compass&directConnection=true&ssl=false").await?;
+    let database = client.database("rmdb");
+    let collection = database.collection("load");
+    let document = doc! {
+        "name": "rrajesh1979",
+        "dob": 1979
+    };
+    collection.insert_one(document, None).await?;
+    Ok(())
 }
