@@ -1,10 +1,30 @@
 [package]
-name = "rust-mdb-load"
+name = "rust_mdb_load"
 version = "0.1.0"
 edition = "2021"
+include = [
+    "src/**/*",
+    "Cargo.toml",
+    "LICENSE-*",
+    "README.md"
+]
+description = "Load generator for MongoDB Atlas using Rust"
+repository = "https://github.com/rrajesh1979/rust_mdb_load"
+documentation = "https://docs.rs/rust_mdb_load"
+keywords = [
+    "rust_mdb_load",
+    "cli",
+    "completion",
+    "zsh",
+]
+categories = ["rust", "mongodb", "cli"]
+license = "Apache-2.0"
+readme = "README.md"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
 log = "0.4.14"
 log4rs = "1.0.0"
+clap = { version = "3.0.13", features = ["derive"] }
+clap_complete = "3.0.5"
