@@ -7,7 +7,11 @@ use clap::Parser;
 #[clap(author, version, about, long_about = None)]
 pub struct Opt {
     /// MongoDB connection string
-    #[clap(short, long, default_value = "mongodb://localhost:27017/?readPreference=primary&appname=MongoDB%20Compass&directConnection=true&ssl=false")]
+    #[clap(
+        short,
+        long,
+        default_value = "mongodb://localhost:27017/?readPreference=primary&appname=MongoDB%20Compass&directConnection=true&ssl=false"
+    )]
     pub(crate) conn: String,
 
     /// Duration in seconds. Default 120

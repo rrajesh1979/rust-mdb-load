@@ -1,5 +1,5 @@
-use bson::{Document, Uuid};
 use bson::spec::BinarySubtype::Generic;
+use bson::{Document, Uuid};
 use rand::Rng;
 use serde::{Deserialize, Serialize};
 
@@ -14,7 +14,14 @@ struct MongoDoc {
     binary: bool,
 }
 
-pub fn create_doc(num_fields: u16, depth: u8, txt_len: usize, binary: bool, process_id: usize, run_id_start: usize) -> Document {
+pub fn create_doc(
+    num_fields: u16,
+    depth: u8,
+    txt_len: usize,
+    binary: bool,
+    process_id: usize,
+    run_id_start: usize,
+) -> Document {
     let mut mongo_doc = MongoDoc {
         document: Document::new(),
         num_fields,
@@ -49,7 +56,9 @@ impl Create for MongoDoc {
             let s = create_string(self.txt_len);
             match f_type {
                 TypeInt => self.document.insert(format!("{}{}", "fld", field_num), i),
-                TypeDate => self.document.insert(format!("{}{}", "fld", field_num), chrono::Utc::now() ),
+                TypeDate => self
+                    .document
+                    .insert(format!("{}{}", "fld", field_num), chrono::Utc::now()),
                 _ => self.document.insert(format!("{}{}", "fld", field_num), s),
             };
             field_num += 1;
@@ -58,15 +67,16 @@ impl Create for MongoDoc {
 
     fn add_id(&mut self, process_id: usize, sequence: usize) {
         // self.document.insert("_id", Uuid::new());
-        self.document.insert("_id", format!("w-{}-seq-{}", process_id, sequence));
+        self.document
+            .insert("_id", format!("w-{}-seq-{}", process_id, sequence));
     }
 
     fn add_binary(&mut self) {
         if self.binary {
-            let bin = bson::Binary{
+            let bin = bson::Binary {
                 subtype: Generic,
                 //TODO - binary with value
-                bytes: Vec::new()
+                bytes: Vec::new(),
             };
             self.document.insert(format!("{}{}", "fld", "_binary"), bin);
         }

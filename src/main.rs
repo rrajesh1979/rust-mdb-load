@@ -2,16 +2,16 @@
 extern crate log;
 extern crate log4rs;
 
-use std::error::Error;
 use clap::Parser;
+use cli_helper::Opt;
 use mongo_util::FieldTypes::{TypeDate, TypeInt, TypeText};
 use mongo_util::Ops::{MDBInsert, MDBQuery, MDBUpdate};
+use std::error::Error;
 use std::thread;
-use cli_helper::Opt;
 
-mod mongo_util;
 mod cli_helper;
 mod mongo_load_gen;
+mod mongo_util;
 
 fn main() {
     log4rs::init_file("log4rs.yaml", Default::default()).unwrap();
@@ -31,5 +31,4 @@ fn main() {
     for handle in handles {
         let _result = handle.join().unwrap();
     }
-
 }

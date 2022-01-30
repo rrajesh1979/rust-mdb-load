@@ -1,16 +1,20 @@
-use std::collections::HashMap;
-use std::error::Error;
+use crate::{mongo_util, Opt};
 use bson::doc;
 use chrono::Utc;
 use mongodb::Client;
-use crate::{mongo_util, Opt};
+use std::collections::HashMap;
+use std::error::Error;
 
+use crate::{MDBInsert, MDBQuery, MDBUpdate};
 use rand::distributions::{Distribution, WeightedIndex};
 use rand::thread_rng;
-use crate::{MDBInsert, MDBQuery, MDBUpdate};
 
 #[tokio::main]
-pub async fn mongodb_load_gen(opt: Opt, process_id: usize, run_id_start: usize) -> Result<(), Box<dyn Error + Send + Sync>> {
+pub async fn mongodb_load_gen(
+    opt: Opt,
+    process_id: usize,
+    run_id_start: usize,
+) -> Result<(), Box<dyn Error + Send + Sync>> {
     let client = Client::with_uri_str(opt.conn).await?;
     let namespace = opt.namespace;
 
@@ -21,7 +25,11 @@ pub async fn mongodb_load_gen(opt: Opt, process_id: usize, run_id_start: usize) 
     let mut elapsed_seconds: i64 = 0;
     let start_time = chrono::Utc::now();
 
-    let op_weight = [(MDBInsert, opt.inserts), (MDBQuery, opt.queries), (MDBUpdate, opt.updates)];
+    let op_weight = [
+        (MDBInsert, opt.inserts),
+        (MDBQuery, opt.queries),
+        (MDBUpdate, opt.updates),
+    ];
     let dist = WeightedIndex::new(op_weight.iter().map(|item| item.1)).unwrap();
     let mut rng = thread_rng();
 
@@ -31,11 +39,8 @@ pub async fn mongodb_load_gen(opt: Opt, process_id: usize, run_id_start: usize) 
     let duration: i64 = opt.duration as i64;
     let mut binary = false;
     match opt.binary {
-        None => {
-        }
-        Some(_) => {
-            binary = true
-        }
+        None => {}
+        Some(_) => binary = true,
     };
     let txt_len = opt.text_size;
     let depth = opt.nest_depth;
@@ -47,21 +52,27 @@ pub async fn mongodb_load_gen(opt: Opt, process_id: usize, run_id_start: usize) 
         match op {
             MDBInsert => {
                 sequence += 1;
-                collection.insert_one(mongo_util::create_doc(num_fields, depth, txt_len, binary, process_id, sequence), None).await?;
-
-            },
+                collection
+                    .insert_one(
+                        mongo_util::create_doc(
+                            num_fields, depth, txt_len, binary, process_id, sequence,
+                        ),
+                        None,
+                    )
+                    .await?;
+            }
             MDBQuery => {
                 let filter = doc! { "_id": format!("w-{}-seq-{}", process_id, sequence)};
                 let qdoc = collection.find_one(filter, None).await?;
                 match qdoc {
                     Some(ref qdoc) => {
                         //TODO Do something
-                    },
+                    }
                     None => {
                         //TODO Do something
                     }
                 }
-            },
+            }
             MDBUpdate => {
                 //TODO Do something
             }
