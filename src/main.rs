@@ -12,16 +12,12 @@ mod mongo_util;
 mod cli_helper;
 mod mongo_load_gen;
 
-#[tokio::main]
-async fn main()  -> Result<(), Box<dyn Error + Send + Sync>> {
+fn main() {
     log4rs::init_file("log4rs.yaml", Default::default()).unwrap();
-
     info!("Initializing MongoDB load generator!");
-
     let opt: Opt = Opt::parse();
-    println!("{:#?}", opt);
 
-    mongo_load_gen::mongodb_load_gen(opt).await
+    mongo_load_gen::mongodb_load_gen(opt);
 
     // let handle = thread::spawn(|| {
     //

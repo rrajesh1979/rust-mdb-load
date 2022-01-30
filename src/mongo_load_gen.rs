@@ -2,6 +2,7 @@ use std::error::Error;
 use mongodb::Client;
 use crate::{mongo_util, Opt};
 
+#[tokio::main]
 pub async fn mongodb_load_gen(opt: Opt) -> Result<(), Box<dyn Error + Send + Sync>> {
     let client = Client::with_uri_str(opt.conn).await?;
     let namespace = opt.namespace;
