@@ -21,6 +21,14 @@ jobs:
         with:
           toolchain: nightly
           override: true
+      - name: Get tag
+        id: tag
+        uses: dawidd6/action-get-tag@v1
+        with:
+          # Optionally strip `v` prefix
+          strip_v: true
+      - name: Use tag
+        run: echo ${{steps.tag.outputs.tag}}
       - name: Run hub commands
         env:
           GITHUB_USER: ${{ secrets.GITHUB_USER }}
@@ -29,15 +37,17 @@ jobs:
           cargo build --bin rust_mdb_load --release
           if [ "$RUNNER_OS" == "Linux" ]; then
               cd target/release
+              export TAG=${{steps.tag.outputs.tag}}
               export ASSET="rust_mdb_load-$TAG-linux-x86_64.tar.gz"
               tar czf ../../$ASSET rust_mdb_load
           elif [ "$RUNNER_OS" == "macOS" ]; then
               cd target/release
+              export TAG=${{steps.tag.outputs.tag}}
               export ASSET="rust_mdb_load-$TAG-osx-x86_64.tar.gz"
               sudo /usr/sbin/purge
               tar czf ../../$ASSET rust_mdb_load
           fi
-          hub release edit -m "" --attach $asset $TAG
+          hub release edit -m "" --attach $ASSET $TAG
           
 
 #          elif [ "$RUNNER_OS" == "Windows" ]; then
