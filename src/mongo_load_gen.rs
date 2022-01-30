@@ -62,13 +62,8 @@ pub async fn mongodb_load_gen(
             MDBQuery => {
                 let filter = doc! { "_id": format!("w-{}-seq-{}", process_id, sequence)};
                 let _qdoc = collection.find_one(filter, None).await?;
-                match _qdoc {
-                    Some(ref _qdoc) => {
-                        //TODO Do something
-                    }
-                    None => {
-                        //TODO Do something
-                    }
+                if let Some(ref _qdoc) = _qdoc {
+                    //TODO Do something
                 }
             }
             MDBUpdate => {
