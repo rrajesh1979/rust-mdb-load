@@ -28,7 +28,10 @@ jobs:
           # Optionally strip `v` prefix
           strip_v: true
       - name: Use tag
-        run: echo ${{steps.tag.outputs.tag}}
+        run: |
+          echo ${{steps.tag.outputs.tag}}
+          export TAG=${{steps.tag.outputs.tag}}
+          echo $TAG
       - name: Run hub commands
         env:
           GITHUB_USER: ${{ secrets.GITHUB_USER }}
