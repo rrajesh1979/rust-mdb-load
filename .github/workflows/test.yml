@@ -1,0 +1,29 @@
+name: Test
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+
+jobs:
+  test:
+    name: Test
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ ubuntu-latest, macos-latest ]
+    steps:
+      - name: Hub already installed
+        run: |
+          hub --version
+      - name: Run hub commands
+        run: |
+          if [ "$RUNNER_OS" == "Linux" ]; then
+              cd target/release
+              export ASSET="rust_mdb_load-TAG-linux-x86_64.tar.gz"
+          elif [ "$RUNNER_OS" == "macOS" ]; then
+              cd target/release
+              export ASSET="rust_mdb_load-TAG-osx-x86_64.tar.gz"
+          fi
+          echo $ASSET 
+          echo $TAG
