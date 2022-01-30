@@ -16,12 +16,22 @@ jobs:
       - name: Hub already installed
         run: |
           hub --version
+      - name: Get tag
+        id: tag
+        uses: dawidd6/action-get-tag@v1
+        with:
+        # Optionally strip `v` prefix
+          strip_v: true
+      - name: Use tag
+        run: echo ${{steps.tag.outputs.tag}}
       - name: Run hub commands
         run: |
           if [ "$RUNNER_OS" == "Linux" ]; then
               export ASSET="rust_mdb_load-TAG-linux-x86_64.tar.gz"
+              export TAG=${{steps.tag.outputs.tag}}
           elif [ "$RUNNER_OS" == "macOS" ]; then
               export ASSET="rust_mdb_load-TAG-osx-x86_64.tar.gz"
+              export TAG=${{steps.tag.outputs.tag}}
           fi
           echo $ASSET 
           echo $TAG
