@@ -1,5 +1,5 @@
 use bson::spec::BinarySubtype::Generic;
-use bson::{Document};
+use bson::Document;
 use rand::Rng;
 use serde::{Deserialize, Serialize};
 
