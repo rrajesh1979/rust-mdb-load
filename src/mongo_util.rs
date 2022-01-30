@@ -1,5 +1,5 @@
 use bson::spec::BinarySubtype::Generic;
-use bson::{Document, Uuid};
+use bson::{Document};
 use rand::Rng;
 use serde::{Deserialize, Serialize};
 
@@ -37,7 +37,7 @@ pub fn create_doc(
 
 fn create_string(len: usize) -> String {
     let random_text = lipsum::lipsum(len);
-    random_text.to_string()
+    random_text
 }
 
 trait Create {

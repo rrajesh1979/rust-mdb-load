@@ -6,7 +6,6 @@ use clap::Parser;
 use cli_helper::Opt;
 use mongo_util::FieldTypes::{TypeDate, TypeInt, TypeText};
 use mongo_util::Ops::{MDBInsert, MDBQuery, MDBUpdate};
-use std::error::Error;
 use std::thread;
 
 mod cli_helper;

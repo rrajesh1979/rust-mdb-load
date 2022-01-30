@@ -1,8 +1,6 @@
 use crate::{mongo_util, Opt};
 use bson::doc;
-use chrono::Utc;
 use mongodb::Client;
-use std::collections::HashMap;
 use std::error::Error;
 
 use crate::{MDBInsert, MDBQuery, MDBUpdate};
@@ -63,9 +61,9 @@ pub async fn mongodb_load_gen(
             }
             MDBQuery => {
                 let filter = doc! { "_id": format!("w-{}-seq-{}", process_id, sequence)};
-                let qdoc = collection.find_one(filter, None).await?;
-                match qdoc {
-                    Some(ref qdoc) => {
+                let _qdoc = collection.find_one(filter, None).await?;
+                match _qdoc {
+                    Some(ref _qdoc) => {
                         //TODO Do something
                     }
                     None => {
@@ -85,15 +83,15 @@ pub async fn mongodb_load_gen(
         elapsed_seconds = chrono::Utc::now().timestamp() - start_time.timestamp();
     }
 
-    if slow_ops.len() > 0 {
+    if !slow_ops.is_empty() {
         info!("{} slow ops found", slow_ops.len());
     }
 
     Ok(())
 }
 
-fn parse_namespace(ns: &String) -> (String, String) {
-    let namespace: Vec<&str> = ns.split(".").collect();
+fn parse_namespace(ns: &str) -> (String, String) {
+    let namespace: Vec<&str> = ns.split('.').collect();
     let db;
     let coll;
     if namespace.len() == 2 {
