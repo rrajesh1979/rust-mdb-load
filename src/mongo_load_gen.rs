@@ -4,10 +4,16 @@ use crate::{mongo_util, Opt};
 
 pub async fn mongodb_load_gen(opt: Opt) -> Result<(), Box<dyn Error + Send + Sync>> {
     let client = Client::with_uri_str(opt.conn).await?;
-    let database = client.database("rmdb");
-    let collection = database.collection("load");
+    let namespace = opt.namespace;
+
+    let (db, coll) = parse_namespace(&namespace);
+
+    let database = client.database(&*db);
+    let collection = database.collection(&*coll);
     let mut elapsed_seconds: i64 = 0;
     let start_time = chrono::Utc::now();
+
+    //TODO Worked around the Reference issue by splitting into scalar variables. Need to find out the right way to do
     let duration: i64 = opt.duration as i64;
     let mut binary = false;
     match opt.binary {
@@ -26,3 +32,18 @@ pub async fn mongodb_load_gen(opt: Opt) -> Result<(), Box<dyn Error + Send + Syn
     }
     Ok(())
 }
+
+fn parse_namespace(ns: &String) -> (String, String) {
+    let namespace: Vec<&str> = ns.split(".").collect();
+    let db;
+    let coll;
+    if namespace.len() == 2 {
+        db = namespace[0];
+        coll = namespace[1];
+    } else {
+        db = "rmdb";
+        coll = "load";
+    }
+    (db.parse().unwrap(), coll.parse().unwrap())
+}
+

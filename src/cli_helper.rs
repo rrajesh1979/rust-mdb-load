@@ -1,5 +1,7 @@
 use clap::Parser;
 
+//TODO Check if the visibility configured is idiomatic
+
 /// Load generator for MongoDB Atlas built using Rust
 #[derive(Parser, Clone, Debug)]
 #[clap(author, version, about, long_about = None)]
