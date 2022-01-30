@@ -4,7 +4,6 @@ extern crate log4rs;
 
 use std::error::Error;
 use clap::Parser;
-use mongodb::Client;
 use mongo_util::FieldTypes::{TypeDate, TypeInt, TypeText};
 use std::thread;
 use cli_helper::Opt;

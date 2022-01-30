@@ -3,7 +3,7 @@ use mongodb::Client;
 use crate::{mongo_util, Opt};
 
 pub async fn mongodb_load_gen(opt: Opt) -> Result<(), Box<dyn Error + Send + Sync>> {
-    let client = Client::with_uri_str("mongodb://localhost:27017/?readPreference=primary&appname=MongoDB%20Compass&directConnection=true&ssl=false").await?;
+    let client = Client::with_uri_str(opt.conn).await?;
     let database = client.database("rmdb");
     let collection = database.collection("load");
     let mut elapsed_seconds: i64 = 0;
