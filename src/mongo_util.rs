@@ -94,3 +94,9 @@ pub enum FieldTypes {
     TypeDate,
     TypeText,
 }
+
+pub(crate) enum Ops {
+    MDBInsert,
+    MDBQuery,
+    MDBUpdate,
+}
