@@ -10,6 +10,8 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest, macos-latest]
+        exclude:
+          - os: ubuntu-latest
     steps:
       - uses: actions/checkout@master
       - name: Hub already installed
@@ -50,6 +52,7 @@ jobs:
               sudo /usr/sbin/purge
               tar czf ../../$ASSET rust_mdb_load
           fi
+          cd ../..
           hub release edit -m "" --attach $ASSET $TAG
           
 
