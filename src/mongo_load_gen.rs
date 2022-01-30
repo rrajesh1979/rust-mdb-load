@@ -3,7 +3,7 @@ use mongodb::Client;
 use crate::{mongo_util, Opt};
 
 #[tokio::main]
-pub async fn mongodb_load_gen(opt: Opt) -> Result<(), Box<dyn Error + Send + Sync>> {
+pub async fn mongodb_load_gen(opt: Opt, process_id: usize, run_id_start: usize) -> Result<(), Box<dyn Error + Send + Sync>> {
     let client = Client::with_uri_str(opt.conn).await?;
     let namespace = opt.namespace;
 
@@ -27,8 +27,10 @@ pub async fn mongodb_load_gen(opt: Opt) -> Result<(), Box<dyn Error + Send + Syn
     let txt_len = opt.text_size;
     let depth = opt.nest_depth;
     let num_fields = opt.num_fields;
+    let mut sequence = run_id_start;
     while elapsed_seconds < duration {
-        collection.insert_one(mongo_util::create_doc(num_fields, depth, txt_len, binary), None).await?;
+        sequence += 1;
+        collection.insert_one(mongo_util::create_doc(num_fields, depth, txt_len, binary, process_id, sequence), None).await?;
         elapsed_seconds = chrono::Utc::now().timestamp() - start_time.timestamp();
     }
     Ok(())

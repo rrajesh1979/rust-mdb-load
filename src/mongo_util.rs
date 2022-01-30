@@ -14,7 +14,7 @@ struct MongoDoc {
     binary: bool,
 }
 
-pub fn create_doc(num_fields: u16, depth: u8, txt_len: usize, binary: bool) -> Document {
+pub fn create_doc(num_fields: u16, depth: u8, txt_len: usize, binary: bool, process_id: usize, run_id_start: usize) -> Document {
     let mut mongo_doc = MongoDoc {
         document: Document::new(),
         num_fields,
@@ -22,7 +22,7 @@ pub fn create_doc(num_fields: u16, depth: u8, txt_len: usize, binary: bool) -> D
         txt_len,
         binary,
     };
-    mongo_doc.add_id();
+    mongo_doc.add_id(process_id, run_id_start);
     mongo_doc.add_fields();
     mongo_doc.add_binary();
     mongo_doc.document
@@ -35,7 +35,7 @@ fn create_string(len: usize) -> String {
 
 trait Create {
     fn add_fields(&mut self);
-    fn add_id(&mut self);
+    fn add_id(&mut self, process_id: usize, run_id_start: usize);
     fn add_binary(&mut self);
     fn field_type(&self, field_num: u16) -> FieldTypes;
 }
@@ -56,8 +56,9 @@ impl Create for MongoDoc {
         }
     }
 
-    fn add_id(&mut self) {
-        self.document.insert("_id", Uuid::new());
+    fn add_id(&mut self, process_id: usize, sequence: usize) {
+        // self.document.insert("_id", Uuid::new());
+        self.document.insert("_id", format!("w-{}-seq-{}", process_id, sequence));
     }
 
     fn add_binary(&mut self) {

@@ -17,10 +17,18 @@ fn main() {
     info!("Initializing MongoDB load generator!");
     let opt: Opt = Opt::parse();
 
-    mongo_load_gen::mongodb_load_gen(opt);
+    let mut handles = Vec::new();
 
-    // let handle = thread::spawn(|| {
-    //
-    // });
-    // handle.join().unwrap();
+    for i in 1..opt.threads {
+        let handle = thread::spawn(move || {
+            let new_opt = Opt::parse();
+            let _result = mongo_load_gen::mongodb_load_gen(new_opt, i, opt.run_id_start);
+        });
+        handles.push(handle);
+    }
+
+    for handle in handles {
+        let _result = handle.join().unwrap();
+    }
+
 }
