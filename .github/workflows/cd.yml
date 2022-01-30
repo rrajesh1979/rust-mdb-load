@@ -15,6 +15,7 @@ jobs:
       - name: Hub already installed
         run: |
           hub --version
+          echo "TAG" $TAG
       - name: Install Rust
         uses: actions-rs/toolchain@v1
         with:
@@ -28,18 +29,20 @@ jobs:
           cargo build --bin rust_mdb_load --release
           if [ "$RUNNER_OS" == "Linux" ]; then
               cd target/release
-              asset="rust_mdb_load-$TAG-$host.tar.gz"
-              tar czf ../../$asset rust_mdb_load
+              export ASSET="rust_mdb_load-$TAG-linux-x86_64.tar.gz"
+              tar czf ../../$ASSET rust_mdb_load
           elif [ "$RUNNER_OS" == "macOS" ]; then
               cd target/release
-              asset="rust_mdb_load-$TAG-$host.tar.gz"
+              export ASSET="rust_mdb_load-$TAG-osx-x86_64.tar.gz"
               sudo /usr/sbin/purge
-              tar czf ../../$asset rust_mdb_load
-          elif [ "$RUNNER_OS" == "Windows" ]; then
-              asset="rust_mdb_load-$TAG-$host.zip"
-              7z a ../../$asset rust_mdb_load.exe
+              tar czf ../../$ASSET rust_mdb_load
+          fi
           hub release edit -m "" --attach $asset $TAG
           
+
+#          elif [ "$RUNNER_OS" == "Windows" ]; then
+#              asset="rust_mdb_load-$TAG-$host.zip"
+#              7z a ../../$ASSET rust_mdb_load.exe
 
 #      - name: Build and deploy artifacts
 #        env:
