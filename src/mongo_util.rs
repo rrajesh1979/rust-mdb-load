@@ -36,8 +36,7 @@ pub fn create_doc(
 }
 
 fn create_string(len: usize) -> String {
-    let random_text = lipsum::lipsum(len);
-    random_text
+    lipsum::lipsum(len)
 }
 
 trait Create {
