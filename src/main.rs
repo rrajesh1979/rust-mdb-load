@@ -11,9 +11,7 @@ use log4rs::config::{Appender, Root};
 use log4rs::Config;
 use mongo_util::FieldTypes::{Date, Int, Text};
 use mongo_util::Ops::{Insert, Query, Update};
-use std::error::Error;
-use std::sync::atomic::AtomicI32;
-use std::sync::{Arc, Mutex};
+use std::sync::Mutex;
 use std::thread;
 
 mod cli_helper;
@@ -21,9 +19,9 @@ mod mongo_load_gen;
 mod mongo_util;
 
 lazy_static! {
-    pub static ref inserts: Mutex<i32> = Mutex::new(0i32);
-    pub static ref queries: Mutex<i32> = Mutex::new(0i32);
-    pub static ref updates: Mutex<i32> = Mutex::new(0i32);
+    pub static ref INSERTS_N: Mutex<i32> = Mutex::new(0i32);
+    pub static ref QUERIES_N: Mutex<i32> = Mutex::new(0i32);
+    pub static ref UPDATES_N: Mutex<i32> = Mutex::new(0i32);
 }
 
 fn main() {

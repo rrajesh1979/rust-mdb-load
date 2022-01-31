@@ -1,4 +1,4 @@
-use crate::{inserts, mongo_util, queries, updates, Opt};
+use crate::{mongo_util, Opt, INSERTS_N, QUERIES_N, UPDATES_N};
 use bson::doc;
 use mongodb::Client;
 use std::error::Error;
@@ -7,7 +7,6 @@ use crate::mongo_util::create_string;
 use crate::{Insert, Query, Update};
 use rand::distributions::{Distribution, WeightedIndex};
 use rand::{thread_rng, Rng};
-use std::sync::{Arc, Mutex};
 
 use std::time::Duration;
 use tokio::time;
@@ -26,9 +25,9 @@ pub async fn print_stats(opt: Opt) -> Result<(), Box<dyn Error + Send + Sync>> {
             "------------ Stats after {} seconds -----------",
             elapsed_seconds
         );
-        info!("Number of inserts: {}", inserts.lock().unwrap());
-        info!("Number of updates: {}", updates.lock().unwrap());
-        info!("Number of queries: {}", queries.lock().unwrap());
+        info!("Number of inserts: {}", INSERTS_N.lock().unwrap());
+        info!("Number of updates: {}", UPDATES_N.lock().unwrap());
+        info!("Number of queries: {}", QUERIES_N.lock().unwrap());
         info!("-----------------------------------------------");
         elapsed_seconds = chrono::Utc::now().timestamp() - start_time.timestamp();
     }
@@ -79,7 +78,7 @@ pub async fn mongodb_load_gen(
         match op {
             Insert => {
                 sequence += 1;
-                let insert_result = collection
+                let _insert_result = collection
                     .insert_one(
                         mongo_util::create_doc(
                             num_fields, depth, txt_len, binary, process_id, sequence,
@@ -87,21 +86,18 @@ pub async fn mongodb_load_gen(
                         None,
                     )
                     .await?;
-                unsafe {
-                    //Increment number of insert ops
-                    let mut insert_num = inserts.lock().unwrap();
-                    *insert_num += 1;
-                }
+
+                //Increment number of insert ops
+                let mut insert_num = INSERTS_N.lock().unwrap();
+                *insert_num += 1;
             }
             Query => {
                 let filter = doc! { "_id": format!("w-{}-seq-{}", process_id, sequence)};
                 let _qdoc = collection.find_one(filter, None).await?;
                 if let Some(ref _qdoc) = _qdoc {
-                    unsafe {
-                        //Increment number of insert ops
-                        let mut query_num = queries.lock().unwrap();
-                        *query_num += 1;
-                    }
+                    //Increment number of insert ops
+                    let mut query_num = QUERIES_N.lock().unwrap();
+                    *query_num += 1;
                 }
             }
             Update => {
@@ -122,11 +118,9 @@ pub async fn mongodb_load_gen(
                 };
                 let update_result = collection.update_one(filter, update_doc, None).await?;
                 if update_result.modified_count > 0 {
-                    unsafe {
-                        //Increment number of update ops
-                        let mut update_num = updates.lock().unwrap();
-                        *update_num += 1;
-                    }
+                    //Increment number of update ops
+                    let mut update_num = UPDATES_N.lock().unwrap();
+                    *update_num += 1;
                 }
             }
         }
