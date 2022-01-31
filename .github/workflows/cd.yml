@@ -53,7 +53,9 @@ jobs:
         with:
           use-cross: ${{ matrix.job.use-cross }}
           command: build
-          args: --locked --release --target=${{ matrix.job.target }}
+          args: --locked --release --all-features
+          #--target=${{ matrix.job.target }}
+#          args: --locked --release --target=${{ matrix.job.target }}
 
       - name: Troubleshooting 1
         run: |
@@ -61,10 +63,6 @@ jobs:
           pwd
           echo "ls target/release"
           ls target/release
-          echo "tree target"
-          tree target
-          echo "tree out"
-          tree out
 
       - name: Assemble
         uses: jreleaser/release-action@v2
@@ -82,10 +80,6 @@ jobs:
           pwd
           echo "ls target/release"
           ls target/release
-          echo "tree target"
-          tree target
-          echo "tree out"
-          tree out
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v2
