@@ -62,6 +62,10 @@ OPTIONS:
 
 ## Examples
 ```shell
+cargo clean
+cargo fmt --all -- --check
+cargo fmt --all
+cargo audit
 cargo build
 rust_mdb_load --num-fields=10 --binary=false --text-size=100 --duration=10 --namespace="mydb.mycoll"
 time ./target/debug/rust_mdb_load --num-fields=10 --binary=false --text-size=100 --duration=10 --namespace="mydb.mycoll" --threads=5 --inserts=60 --queries=20 --updates=20

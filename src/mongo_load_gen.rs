@@ -1,20 +1,20 @@
-use crate::{inserts, mongo_util, Opt, queries, updates};
+use crate::{inserts, mongo_util, queries, updates, Opt};
 use bson::doc;
 use mongodb::Client;
 use std::error::Error;
 
+use crate::mongo_util::create_string;
 use crate::{Insert, Query, Update};
 use rand::distributions::{Distribution, WeightedIndex};
 use rand::{thread_rng, Rng};
 use std::sync::{Arc, Mutex};
-use crate::mongo_util::create_string;
 
-use tokio::time;
 use std::time::Duration;
+use tokio::time;
 
 //TODO - there should be a better way to gather and print metrics
 #[tokio::main]
-pub async fn print_stats(opt: Opt,) -> Result<(), Box<dyn Error + Send + Sync>> {
+pub async fn print_stats(opt: Opt) -> Result<(), Box<dyn Error + Send + Sync>> {
     let mut elapsed_seconds: i64 = 0;
     let duration: i64 = opt.duration as i64;
     let start_time = chrono::Utc::now();
@@ -22,7 +22,10 @@ pub async fn print_stats(opt: Opt,) -> Result<(), Box<dyn Error + Send + Sync>> 
     while elapsed_seconds <= duration {
         //TODO make interval configurable
         time::sleep(Duration::from_millis(3000)).await;
-        info!("------------ Stats after {} seconds -----------", elapsed_seconds);
+        info!(
+            "------------ Stats after {} seconds -----------",
+            elapsed_seconds
+        );
         info!("Number of inserts: {}", inserts.lock().unwrap());
         info!("Number of updates: {}", updates.lock().unwrap());
         info!("Number of queries: {}", queries.lock().unwrap());
@@ -110,14 +113,14 @@ pub async fn mongodb_load_gen(
                 let updated_text = create_string(100);
                 let updated_date = chrono::Utc::now();
                 let filter = doc! { "_id": format!("w-{}-seq-{}", process_id, update_seq)};
-                let update_doc = doc!{
+                let update_doc = doc! {
                     "$set": {
                         "fld0": updated_int,
                         "fld2": updated_text,
                         "fld1": updated_date
                     }
                 };
-                let update_result = collection.update_one(filter, update_doc, None,).await?;
+                let update_result = collection.update_one(filter, update_doc, None).await?;
                 if update_result.modified_count > 0 {
                     unsafe {
                         //Increment number of update ops

@@ -2,7 +2,7 @@
 extern crate log;
 extern crate log4rs;
 
-use std::error::Error;
+use clap::lazy_static::lazy_static;
 use clap::Parser;
 use cli_helper::Opt;
 use log::LevelFilter;
@@ -11,10 +11,10 @@ use log4rs::config::{Appender, Root};
 use log4rs::Config;
 use mongo_util::FieldTypes::{Date, Int, Text};
 use mongo_util::Ops::{Insert, Query, Update};
-use std::sync::{Arc, Mutex};
+use std::error::Error;
 use std::sync::atomic::AtomicI32;
+use std::sync::{Arc, Mutex};
 use std::thread;
-use clap::lazy_static::lazy_static;
 
 mod cli_helper;
 mod mongo_load_gen;
@@ -25,7 +25,6 @@ lazy_static! {
     pub static ref queries: Mutex<i32> = Mutex::new(0i32);
     pub static ref updates: Mutex<i32> = Mutex::new(0i32);
 }
-
 
 fn main() {
     initialize_logging();
@@ -53,7 +52,6 @@ fn main() {
     for handle in handles {
         let _result = handle.join().unwrap();
     }
-
 }
 
 fn initialize_logging() {
