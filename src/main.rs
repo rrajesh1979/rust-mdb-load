@@ -4,22 +4,28 @@ extern crate log4rs;
 
 use clap::Parser;
 use cli_helper::Opt;
-use mongo_util::FieldTypes::{TypeDate, TypeInt, TypeText};
-use mongo_util::Ops::{MDBInsert, MDBQuery, MDBUpdate};
+use mongo_util::FieldTypes::{Date, Int, Text};
+use mongo_util::Ops::{Insert, Query, Update};
 use std::thread;
+use log4rs::append::console::ConsoleAppender;
+use log4rs::Config;
+use log4rs::config::{Appender, Root};
+use log::LevelFilter;
 
 mod cli_helper;
 mod mongo_load_gen;
 mod mongo_util;
 
 fn main() {
-    log4rs::init_file("log4rs.yaml", Default::default()).unwrap();
+    initialize_logging();
     info!("Initializing MongoDB load generator!");
+
+    // Parse CLI options
     let opt: Opt = Opt::parse();
 
     let mut handles = Vec::new();
 
-    for i in 1..opt.threads {
+    for i in 1..opt.threads+1 {
         let handle = thread::spawn(move || {
             let new_opt = Opt::parse();
             let _result = mongo_load_gen::mongodb_load_gen(new_opt, i, opt.run_id_start);
@@ -30,4 +36,14 @@ fn main() {
     for handle in handles {
         let _result = handle.join().unwrap();
     }
+}
+
+fn initialize_logging() {
+    let stdout = ConsoleAppender::builder().build();
+    // log4rs::init_file("log4rs.yaml", Default::default()).unwrap();
+    let config = Config::builder()
+        .appender(Appender::builder().build("stdout", Box::new(stdout)))
+        .build(Root::builder().appender("stdout").build(LevelFilter::Info))
+        .unwrap();
+    let _handle = log4rs::init_config(config).unwrap();
 }

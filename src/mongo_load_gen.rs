@@ -3,7 +3,7 @@ use bson::doc;
 use mongodb::Client;
 use std::error::Error;
 
-use crate::{MDBInsert, MDBQuery, MDBUpdate};
+use crate::{Insert, Query, Update};
 use rand::distributions::{Distribution, WeightedIndex};
 use rand::thread_rng;
 
@@ -24,9 +24,9 @@ pub async fn mongodb_load_gen(
     let start_time = chrono::Utc::now();
 
     let op_weight = [
-        (MDBInsert, opt.inserts),
-        (MDBQuery, opt.queries),
-        (MDBUpdate, opt.updates),
+        (Insert, opt.inserts),
+        (Query, opt.queries),
+        (Update, opt.updates),
     ];
     let dist = WeightedIndex::new(op_weight.iter().map(|item| item.1)).unwrap();
     let mut rng = thread_rng();
@@ -48,7 +48,7 @@ pub async fn mongodb_load_gen(
         let op = &op_weight[dist.sample(&mut rng)].0;
         let op_start_time = chrono::Utc::now();
         match op {
-            MDBInsert => {
+            Insert => {
                 sequence += 1;
                 collection
                     .insert_one(
@@ -59,14 +59,14 @@ pub async fn mongodb_load_gen(
                     )
                     .await?;
             }
-            MDBQuery => {
+            Query => {
                 let filter = doc! { "_id": format!("w-{}-seq-{}", process_id, sequence)};
                 let _qdoc = collection.find_one(filter, None).await?;
                 if let Some(ref _qdoc) = _qdoc {
                     //TODO Do something
                 }
             }
-            MDBUpdate => {
+            Update => {
                 //TODO Do something
             }
         }

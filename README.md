@@ -60,7 +60,9 @@ OPTIONS:
             Print version information
 ```
 
+## Examples
 ```shell
 cargo build
 rust_mdb_load --num-fields=10 --binary=false --text-size=100 --duration=10 --namespace="mydb.mycoll"
+time ./target/debug/rust_mdb_load --num-fields=10 --binary=false --text-size=100 --duration=10 --namespace="mydb.mycoll" --threads=5 --inserts=75 --queries=25
 ```

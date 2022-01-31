@@ -3,7 +3,7 @@ use bson::Document;
 use rand::Rng;
 use serde::{Deserialize, Serialize};
 
-use crate::{TypeDate, TypeInt, TypeText};
+use crate::{Date, Int, Text};
 
 #[derive(Serialize, Deserialize)]
 struct MongoDoc {
@@ -54,8 +54,8 @@ impl Create for MongoDoc {
             let i: u32 = rand::thread_rng().gen();
             let s = create_string(self.txt_len);
             match f_type {
-                TypeInt => self.document.insert(format!("{}{}", "fld", field_num), i),
-                TypeDate => self
+                Int => self.document.insert(format!("{}{}", "fld", field_num), i),
+                Date => self
                     .document
                     .insert(format!("{}{}", "fld", field_num), chrono::Utc::now()),
                 _ => self.document.insert(format!("{}{}", "fld", field_num), s),
@@ -83,29 +83,29 @@ impl Create for MongoDoc {
 
     fn field_type(&self, field_num: u16) -> FieldTypes {
         if field_num == 0 {
-            TypeInt
+            Int
         } else if field_num == 1 {
-            TypeDate
+            Date
         } else if field_num == 3 {
-            TypeText
+            Text
         } else if field_num % 3 == 0 {
-            TypeInt
+            Int
         } else if field_num % 5 == 0 {
-            TypeDate
+            Date
         } else {
-            TypeText
+            Text
         }
     }
 }
 
 pub enum FieldTypes {
-    TypeInt,
-    TypeDate,
-    TypeText,
+    Int,
+    Date,
+    Text,
 }
 
 pub(crate) enum Ops {
-    MDBInsert,
-    MDBQuery,
-    MDBUpdate,
+    Insert,
+    Query,
+    Update,
 }
