@@ -129,7 +129,7 @@ jobs:
 #            out/jreleaser/trace.log
 #            out/jreleaser/output.properties
   release:
-    needs: [ precheck ] # , universal
+    needs: [ precheck, build ] # , universal
     if: endsWith(${{ needs.precheck.outputs.VERSION }}, '-SNAPSHOT')
     runs-on: ubuntu-latest
 
