@@ -1,5 +1,50 @@
-# MongoDB load gen: test your MongoDB cluster performance
+<!-- markdownlint-configure-file {
+  "MD013": {
+    "code_blocks": false,
+    "tables": false
+  },
+  "MD033": false,
+  "MD041": false
+} -->
+
+<div align="center">
+
+# MongoDB Load gen
+## Test your MongoDB cluster performance
 ### Written in Rust 🦀
+
+[![CI](https://github.com/rrajesh1979/rust_mdb_load/actions/workflows/ci.yml/badge.svg)](https://github.com/rrajesh1979/rust_mdb_load/actions/workflows/ci.yml) | 
+[![CD](https://github.com/rrajesh1979/rust_mdb_load/actions/workflows/cd.yml/badge.svg)](https://github.com/rrajesh1979/rust_mdb_load/actions/workflows/cd.yml)
+
+<a href="https://github.com/rrajesh1979/rust_mdb_load/graphs/contributors">
+  <img src="https://contrib.rocks/image?repo=rrajesh1979/rust_mdb_load"  alt="Contributors"/>
+</a>
+
+Made with [contrib.rocks](https://contrib.rocks).
+
+[Key Features](#key-features) •
+[Getting started](#getting-started) •
+[How to use](#how-to-use) •
+[Configuration](#configuration) •
+[Related projects](#related-projects) •
+[GitPod Environment](#gitpod-environment) •
+[License](#license) •
+[Code Quality](#code-quality) •
+
+</div>
+
+## Key Features
+<div>
+This is CLI tool to test your MongoDB cluster performance. This tool is built using the following set of tools
+<ul>
+    <li>Rust</li>
+    <li>Cargo</li>
+    <li>JReleaser</li>
+    <li>GitHub Actions and Workflows</li>
+    <li>GitPod environment</li>
+</ul>
+</div>
+
 
 ## Usage
 
@@ -70,3 +115,15 @@ cargo build --release
 rust_mdb_load --num-fields=10 --binary=false --text-size=100 --duration=10 --namespace="mydb.mycoll"
 time ./target/debug/rust_mdb_load --num-fields=10 --binary=false --text-size=100 --duration=10 --namespace="mydb.mycoll" --threads=5 --inserts=60 --queries=20 --updates=20
 ```
+
+## GitPod Environment
+Fork and develop online using this ready to use GitPod environment.
+
+[![setup automated](https://img.shields.io/badge/Gitpod-ready_to_code-orange?logo=gitpod)](https://gitpod.io/from-referrer/)
+
+## Related projects
+
+
+## License
+
+![GitHub](https://img.shields.io/github/license/rrajesh1979/rust_mdb_load)
