@@ -12,6 +12,7 @@ use crate::mongo_util::create_string;
 use tokio::time;
 use std::time::Duration;
 
+//TODO - there should be a better way to gather and print metrics
 #[tokio::main]
 pub async fn print_stats(opt: Opt,) -> Result<(), Box<dyn Error + Send + Sync>> {
     let mut elapsed_seconds: i64 = 0;
@@ -19,6 +20,7 @@ pub async fn print_stats(opt: Opt,) -> Result<(), Box<dyn Error + Send + Sync>> 
     let start_time = chrono::Utc::now();
 
     while elapsed_seconds <= duration {
+        //TODO make interval configurable
         time::sleep(Duration::from_millis(3000)).await;
         info!("------------ Stats after {} seconds -----------", elapsed_seconds);
         info!("Number of inserts: {}", inserts.lock().unwrap());
