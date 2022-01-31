@@ -4,13 +4,13 @@ extern crate log4rs;
 
 use clap::Parser;
 use cli_helper::Opt;
+use log::LevelFilter;
+use log4rs::append::console::ConsoleAppender;
+use log4rs::config::{Appender, Root};
+use log4rs::Config;
 use mongo_util::FieldTypes::{Date, Int, Text};
 use mongo_util::Ops::{Insert, Query, Update};
 use std::thread;
-use log4rs::append::console::ConsoleAppender;
-use log4rs::Config;
-use log4rs::config::{Appender, Root};
-use log::LevelFilter;
 
 mod cli_helper;
 mod mongo_load_gen;
@@ -25,7 +25,7 @@ fn main() {
 
     let mut handles = Vec::new();
 
-    for i in 1..opt.threads+1 {
+    for i in 1..opt.threads + 1 {
         let handle = thread::spawn(move || {
             let new_opt = Opt::parse();
             let _result = mongo_load_gen::mongodb_load_gen(new_opt, i, opt.run_id_start);
