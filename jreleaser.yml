@@ -66,4 +66,18 @@ distributions:
         platform: 'linux-aarch_64'
     brew:
       active: ALWAYS
-      multiPlatform: true
+      continueOnError: true
+      commitAuthor:
+        name: rrajesh1979
+        email: rrajesh1979@gmail.com
+      tap:
+        active: ALWAYS
+        owner: rrajesh1979
+        name: homebrew-tap
+        branch: HEAD
+        tagName: '{{distributionName}} {{tagName}}'
+        username: rrajesh1979
+        token: ${{ secrets.RMDB_RELEASE_TOKEN }}
+        commitMessage: '{{distributionName}} {{tagName}}'
+      formulaName: rmdbl
+      multiPlatform: false
