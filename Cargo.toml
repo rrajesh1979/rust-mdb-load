@@ -1,6 +1,6 @@
 [package]
 name = "rust_mdb_load"
-version = "0.1.0"
+version = "0.0.9"
 edition = "2021"
 include = [
     "src/**/*",
@@ -8,7 +8,10 @@ include = [
     "LICENSE-*",
     "README.md"
 ]
-description = "Load generator for MongoDB Atlas using Rust"
+authors = ["Rajesh Rajagopalan"]
+description = """
+Load generator for MongoDB Atlas using Rust
+"""
 repository = "https://github.com/rrajesh1979/rust_mdb_load"
 documentation = "https://docs.rs/rust_mdb_load"
 keywords = [
@@ -17,9 +20,15 @@ keywords = [
     "completion",
     "zsh",
 ]
-categories = ["rust", "mongodb", "cli"]
+categories = [
+    "rust",
+    "mongodb",
+    "cli",
+    "command-line-utilities"
+]
 license = "Apache-2.0"
 readme = "README.md"
+autotests = false
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 

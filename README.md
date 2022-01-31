@@ -1,5 +1,5 @@
 # MongoDB load gen: test your MongoDB cluster performance
-### Written in Rust
+### Written in Rust 🦀
 
 ## Usage
 
