@@ -55,7 +55,7 @@ pub struct Opt {
     pub(crate) threads: usize,
 
     /// Run ID start. Default is 0
-    #[clap(short, long, parse(try_from_str), default_value_t = 0)]
+    #[clap(short, long, parse(try_from_str), default_value_t = 1000)]
     pub(crate) run_id_start: usize,
 
     /// Add BLOB filed

@@ -1,11 +1,35 @@
-use crate::{mongo_util, Opt};
+use crate::{inserts, mongo_util, Opt, queries, updates};
 use bson::doc;
 use mongodb::Client;
 use std::error::Error;
 
 use crate::{Insert, Query, Update};
 use rand::distributions::{Distribution, WeightedIndex};
-use rand::thread_rng;
+use rand::{thread_rng, Rng};
+use std::sync::{Arc, Mutex};
+use crate::mongo_util::create_string;
+
+use tokio::time;
+use std::time::Duration;
+
+#[tokio::main]
+pub async fn print_stats(opt: Opt,) -> Result<(), Box<dyn Error + Send + Sync>> {
+    let mut elapsed_seconds: i64 = 0;
+    let duration: i64 = opt.duration as i64;
+    let start_time = chrono::Utc::now();
+
+    while elapsed_seconds <= duration {
+        time::sleep(Duration::from_millis(3000)).await;
+        info!("------------ Stats after {} seconds -----------", elapsed_seconds);
+        info!("Number of inserts: {}", inserts.lock().unwrap());
+        info!("Number of updates: {}", updates.lock().unwrap());
+        info!("Number of queries: {}", queries.lock().unwrap());
+        info!("-----------------------------------------------");
+        elapsed_seconds = chrono::Utc::now().timestamp() - start_time.timestamp();
+    }
+
+    Ok(())
+}
 
 #[tokio::main]
 pub async fn mongodb_load_gen(
@@ -44,13 +68,13 @@ pub async fn mongodb_load_gen(
     let depth = opt.nest_depth;
     let num_fields = opt.num_fields;
     let mut sequence = run_id_start;
-    while elapsed_seconds < duration {
+    while elapsed_seconds <= duration {
         let op = &op_weight[dist.sample(&mut rng)].0;
         let op_start_time = chrono::Utc::now();
         match op {
             Insert => {
                 sequence += 1;
-                collection
+                let insert_result = collection
                     .insert_one(
                         mongo_util::create_doc(
                             num_fields, depth, txt_len, binary, process_id, sequence,
@@ -58,16 +82,47 @@ pub async fn mongodb_load_gen(
                         None,
                     )
                     .await?;
+                unsafe {
+                    //Increment number of insert ops
+                    let mut insert_num = inserts.lock().unwrap();
+                    *insert_num += 1;
+                }
             }
             Query => {
                 let filter = doc! { "_id": format!("w-{}-seq-{}", process_id, sequence)};
                 let _qdoc = collection.find_one(filter, None).await?;
                 if let Some(ref _qdoc) = _qdoc {
-                    //TODO Do something
+                    unsafe {
+                        //Increment number of insert ops
+                        let mut query_num = queries.lock().unwrap();
+                        *query_num += 1;
+                    }
                 }
             }
             Update => {
-                //TODO Do something
+                //TODO Implement
+                let updated_int: u32 = rand::thread_rng().gen();
+                // info!("sequence {}", sequence);
+                let update_seq: usize = rand::thread_rng().gen_range(0..sequence);
+                // info!("update_seq {}", update_seq);
+                let updated_text = create_string(100);
+                let updated_date = chrono::Utc::now();
+                let filter = doc! { "_id": format!("w-{}-seq-{}", process_id, update_seq)};
+                let update_doc = doc!{
+                    "$set": {
+                        "fld0": updated_int,
+                        "fld2": updated_text,
+                        "fld1": updated_date
+                    }
+                };
+                let update_result = collection.update_one(filter, update_doc, None,).await?;
+                if update_result.modified_count > 0 {
+                    unsafe {
+                        //Increment number of update ops
+                        let mut update_num = updates.lock().unwrap();
+                        *update_num += 1;
+                    }
+                }
             }
         }
         let op_end_time = chrono::Utc::now();

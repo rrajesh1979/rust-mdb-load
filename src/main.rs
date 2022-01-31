@@ -2,6 +2,7 @@
 extern crate log;
 extern crate log4rs;
 
+use std::error::Error;
 use clap::Parser;
 use cli_helper::Opt;
 use log::LevelFilter;
@@ -10,11 +11,21 @@ use log4rs::config::{Appender, Root};
 use log4rs::Config;
 use mongo_util::FieldTypes::{Date, Int, Text};
 use mongo_util::Ops::{Insert, Query, Update};
+use std::sync::{Arc, Mutex};
+use std::sync::atomic::AtomicI32;
 use std::thread;
+use clap::lazy_static::lazy_static;
 
 mod cli_helper;
 mod mongo_load_gen;
 mod mongo_util;
+
+lazy_static! {
+    pub static ref inserts: Mutex<i32> = Mutex::new(0i32);
+    pub static ref queries: Mutex<i32> = Mutex::new(0i32);
+    pub static ref updates: Mutex<i32> = Mutex::new(0i32);
+}
+
 
 fn main() {
     initialize_logging();
@@ -22,6 +33,11 @@ fn main() {
 
     // Parse CLI options
     let opt: Opt = Opt::parse();
+
+    let stats_handle = thread::spawn(|| {
+        let stat_opt = Opt::parse();
+        let _stats_result = mongo_load_gen::print_stats(stat_opt);
+    });
 
     let mut handles = Vec::new();
 
@@ -32,10 +48,12 @@ fn main() {
         });
         handles.push(handle);
     }
+    handles.push(stats_handle);
 
     for handle in handles {
         let _result = handle.join().unwrap();
     }
+
 }
 
 fn initialize_logging() {

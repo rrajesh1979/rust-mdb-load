@@ -35,7 +35,7 @@ pub fn create_doc(
     mongo_doc.document
 }
 
-fn create_string(len: usize) -> String {
+pub(crate) fn create_string(len: usize) -> String {
     lipsum::lipsum(len)
 }
 

@@ -10,7 +10,7 @@ include = [
 ]
 authors = ["Rajesh Rajagopalan"]
 description = """
-Load generator for MongoDB Atlas using Rust
+Load generator for MongoDB Atlas using Rust 🦀
 """
 repository = "https://github.com/rrajesh1979/rust_mdb_load"
 documentation = "https://docs.rs/rust_mdb_load"
