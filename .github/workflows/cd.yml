@@ -55,10 +55,16 @@ jobs:
           command: build
           args: --locked --release --target=${{ matrix.job.target }}
 
-      - name: Assemble
+      - name: Troubleshooting 1
         run: |
           ls
           pwd
+          echo "ls target/release"
+          ls target/release
+          echo "tree target"
+          tree target
+          echo "tree out"
+          tree out
 
       - name: Assemble
         uses: jreleaser/release-action@v2
