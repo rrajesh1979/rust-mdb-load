@@ -4,7 +4,7 @@ use std::error::Error;
 use std::time::Duration;
 use tokio::time;
 
-const REPORT_FREQUENCY: u64 = 5000; //Report every 5 seconds
+const REPORT_FREQUENCY: u64 = 10000; //Report every 10 seconds
 
 pub fn record_ops_done(op_type: &str, count: i32) {
     match op_type {
