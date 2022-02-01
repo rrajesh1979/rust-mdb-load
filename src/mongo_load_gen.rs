@@ -91,7 +91,7 @@ pub async fn mongodb_load_gen(
                 // info!("sequence {}", sequence);
                 let update_seq: usize = rand::thread_rng().gen_range(0..sequence);
                 // info!("update_seq {}", update_seq);
-                let updated_text = create_string(100);
+                let updated_text = create_string(txt_len);
                 let updated_date = chrono::Utc::now();
                 let filter = doc! { "_id": format!("w-{}-seq-{}", process_id, update_seq)};
                 let update_doc = doc! {
