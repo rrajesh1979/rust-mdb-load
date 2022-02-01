@@ -49,9 +49,13 @@ This is CLI tool to test your MongoDB cluster performance. This tool is built us
 ## Usage
 
 ```shell
+brew update
+brew install rrajesh1979/tap/rust_mdb_load
+brew upgrade rrajesh1979/tap/rust_mdb_load
+
 rust_mdb_load --help
 2022-01-30 10:13:54 [rust_mdb_load] INFO  rust_mdb_load: Initializing MongoDB load generator!
-rust_mdb_load 0.1.0
+rust_mdb_load 0.0.13
 Load generator for MongoDB Atlas using Rust
 
 USAGE:
@@ -103,10 +107,16 @@ OPTIONS:
 
     -V, --version
             Print version information
+
+
+rust_mdb_load --num-fields=10 --binary=false --text-size=100 --duration=10 --namespace="mybrew.mycoffee" --threads=5 --inserts=60 --queries=20 --updates=20
 ```
 
-## Examples
+## Build yourself
 ```shell
+# Pre-requisite: Rust tool chain
+git clone https://github.com/rrajesh1979/rust_mdb_load.git
+cd rust_mdb_load
 cargo clean
 cargo fmt --all -- --check
 cargo fmt --all

@@ -1,5 +1,5 @@
 use crate::{mongo_util, Opt, INSERTS_N, QUERIES_N, UPDATES_N};
-use bson::doc;
+use bson::{doc, Document};
 use mongodb::Client;
 use std::error::Error;
 
@@ -8,29 +8,16 @@ use crate::{Insert, Query, Update};
 use rand::distributions::{Distribution, WeightedIndex};
 use rand::{thread_rng, Rng};
 
-use std::time::Duration;
-use tokio::time;
-
-//TODO - there should be a better way to gather and print metrics
+/// Initialize MongoDB database and collection
 #[tokio::main]
-pub async fn print_stats(opt: Opt) -> Result<(), Box<dyn Error + Send + Sync>> {
-    let mut elapsed_seconds: i64 = 0;
-    let duration: i64 = opt.duration as i64;
-    let start_time = chrono::Utc::now();
-
-    while elapsed_seconds <= duration {
-        //TODO make interval configurable
-        time::sleep(Duration::from_millis(3000)).await;
-        info!(
-            "------------ Stats after {} seconds -----------",
-            elapsed_seconds
-        );
-        info!("Number of inserts: {}", INSERTS_N.lock().unwrap());
-        info!("Number of updates: {}", UPDATES_N.lock().unwrap());
-        info!("Number of queries: {}", QUERIES_N.lock().unwrap());
-        info!("-----------------------------------------------");
-        elapsed_seconds = chrono::Utc::now().timestamp() - start_time.timestamp();
-    }
+pub async fn mongodb_init(opt: Opt) -> Result<(), Box<dyn Error + Send + Sync>> {
+    let client = Client::with_uri_str(opt.conn).await?;
+    let namespace = opt.namespace;
+    let (db, coll) = parse_namespace(&namespace);
+    let database = client.database(&*db);
+    let collection = database.collection::<Document>(&*coll);
+    let _db_init_result = collection.drop(None).await?;
+    info!("Clean-up of {}.{} completed!", &*db, &*coll);
 
     Ok(())
 }
@@ -41,11 +28,10 @@ pub async fn mongodb_load_gen(
     process_id: usize,
     run_id_start: usize,
 ) -> Result<(), Box<dyn Error + Send + Sync>> {
+    //TODO Can we keep a common connection across threads?
     let client = Client::with_uri_str(opt.conn).await?;
     let namespace = opt.namespace;
-
     let (db, coll) = parse_namespace(&namespace);
-
     let database = client.database(&*db);
     let collection = database.collection(&*coll);
     let mut elapsed_seconds: i64 = 0;

@@ -17,6 +17,7 @@ use std::thread;
 mod cli_helper;
 mod mongo_load_gen;
 mod mongo_util;
+mod stats_reporter;
 
 lazy_static! {
     pub static ref INSERTS_N: Mutex<i32> = Mutex::new(0i32);
@@ -31,9 +32,13 @@ fn main() {
     // Parse CLI options
     let opt: Opt = Opt::parse();
 
+    // Initialize DB
+    let init_opt = Opt::parse();
+    let _init_result = mongo_load_gen::mongodb_init(init_opt);
+
     let stats_handle = thread::spawn(|| {
         let stat_opt = Opt::parse();
-        let _stats_result = mongo_load_gen::print_stats(stat_opt);
+        let _stats_result = stats_reporter::print_stats(stat_opt);
     });
 
     let mut handles = Vec::new();
