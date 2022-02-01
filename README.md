@@ -125,6 +125,38 @@ cargo build --release
 rust_mdb_load --num-fields=10 --binary=false --text-size=100 --duration=10 --namespace="mydb.mycoll"
 time ./target/debug/rust_mdb_load --num-fields=10 --binary=false --text-size=100 --duration=10 --namespace="mydb.mycoll" --threads=5 --inserts=60 --queries=20 --updates=20
 ```
+## Sample output
+```shell
+rust_mdb_load --num-fields=10 --binary=false --text-size=15 --duration=300 --namespace="mybrew.mycoffee" --threads=10 --inserts=100 --queries=25 --conn=$MONGODB_URL
+2022-02-01T16:55:28.270046-05:00 INFO rust_mdb_load - Initializing MongoDB load generator!
+2022-02-01T16:55:29.695048-05:00 INFO rust_mdb_load::mongo_load_gen - Clean-up of mybrew.mycoffee completed!
+2022-02-01T16:55:34.699284-05:00 INFO rust_mdb_load::stats_reporter - ------------ Stats after 0 seconds -----------
+2022-02-01T16:55:34.699312-05:00 INFO rust_mdb_load::stats_reporter - Number of inserts: 197
+2022-02-01T16:55:34.699320-05:00 INFO rust_mdb_load::stats_reporter - Number of updates: 0
+2022-02-01T16:55:34.699326-05:00 INFO rust_mdb_load::stats_reporter - Number of queries: 52
+2022-02-01T16:55:34.699330-05:00 INFO rust_mdb_load::stats_reporter - -----------------------------------------------
+2022-02-01T16:55:39.699368-05:00 INFO rust_mdb_load::stats_reporter - ------------ Stats after 5 seconds -----------
+2022-02-01T16:55:39.699390-05:00 INFO rust_mdb_load::stats_reporter - Number of inserts: 683
+2022-02-01T16:55:39.699394-05:00 INFO rust_mdb_load::stats_reporter - Number of updates: 0
+2022-02-01T16:55:39.699397-05:00 INFO rust_mdb_load::stats_reporter - Number of queries: 179
+2022-02-01T16:55:39.699400-05:00 INFO rust_mdb_load::stats_reporter - -----------------------------------------------
+
+...
+...
+...
+
+2022-02-01T17:00:34.800813-05:00 INFO rust_mdb_load::stats_reporter - ------------ Stats after 300 seconds -----------
+2022-02-01T17:00:34.800866-05:00 INFO rust_mdb_load::stats_reporter - Number of inserts: 28756
+2022-02-01T17:00:34.800878-05:00 INFO rust_mdb_load::stats_reporter - Number of updates: 0
+2022-02-01T17:00:34.800886-05:00 INFO rust_mdb_load::stats_reporter - Number of queries: 7328
+2022-02-01T17:00:34.800893-05:00 INFO rust_mdb_load::stats_reporter - -----------------------------------------------
+2022-02-01T17:00:34.801886-05:00 INFO rust_mdb_load::stats_reporter - ------------ Slow Ops during the run-----------
+2022-02-01T17:00:34.801921-05:00 INFO rust_mdb_load::stats_reporter - Number of slow inserts: 28756
+2022-02-01T17:00:34.801933-05:00 INFO rust_mdb_load::stats_reporter - Number of slow updates: 0
+2022-02-01T17:00:34.801941-05:00 INFO rust_mdb_load::stats_reporter - Number of slow queries: 7334
+2022-02-01T17:00:34.801948-05:00 INFO rust_mdb_load::stats_reporter - -----------------------------------------------
+```
+
 
 ## GitPod Environment
 Fork and develop online using this ready to use GitPod environment.
