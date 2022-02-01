@@ -1,4 +1,4 @@
-use crate::{mongo_util, Opt, INSERTS_N, QUERIES_N, UPDATES_N};
+use crate::{mongo_util, stats_reporter, Opt, INSERTS, QUERIES, UPDATES};
 use bson::{doc, Document};
 use mongodb::Client;
 use std::error::Error;
@@ -60,6 +60,7 @@ pub async fn mongodb_load_gen(
     let mut sequence = run_id_start;
     while elapsed_seconds <= duration {
         let op = &op_weight[dist.sample(&mut rng)].0;
+        let mut op_type = "";
         let op_start_time = chrono::Utc::now();
         match op {
             Insert => {
@@ -73,18 +74,16 @@ pub async fn mongodb_load_gen(
                     )
                     .await?;
 
-                //Increment number of insert ops
-                let mut insert_num = INSERTS_N.lock().unwrap();
-                *insert_num += 1;
+                stats_reporter::record_ops_done(&INSERTS, 1);
+                op_type = &INSERTS;
             }
             Query => {
                 let filter = doc! { "_id": format!("w-{}-seq-{}", process_id, sequence)};
                 let _qdoc = collection.find_one(filter, None).await?;
                 if let Some(ref _qdoc) = _qdoc {
-                    //Increment number of insert ops
-                    let mut query_num = QUERIES_N.lock().unwrap();
-                    *query_num += 1;
+                    stats_reporter::record_ops_done(&QUERIES, 1);
                 }
+                op_type = &QUERIES;
             }
             Update => {
                 //TODO Implement
@@ -104,15 +103,15 @@ pub async fn mongodb_load_gen(
                 };
                 let update_result = collection.update_one(filter, update_doc, None).await?;
                 if update_result.modified_count > 0 {
-                    //Increment number of update ops
-                    let mut update_num = UPDATES_N.lock().unwrap();
-                    *update_num += 1;
+                    stats_reporter::record_ops_done(&UPDATES, update_result.modified_count as i32);
                 }
+                op_type = &UPDATES;
             }
         }
         let op_end_time = chrono::Utc::now();
         let op_time = op_end_time - op_start_time;
         if op_time.num_milliseconds() > 50 {
+            stats_reporter::record_slow_ops(op_type, &op_time);
             slow_ops.push((op, op_time));
         }
         elapsed_seconds = chrono::Utc::now().timestamp() - start_time.timestamp();

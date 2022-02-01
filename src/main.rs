@@ -19,10 +19,18 @@ mod mongo_load_gen;
 mod mongo_util;
 mod stats_reporter;
 
+//TODO Validate if the concurrent access is implemented idiomatically. Do I need to use Arc<T> ?
 lazy_static! {
     pub static ref INSERTS_N: Mutex<i32> = Mutex::new(0i32);
     pub static ref QUERIES_N: Mutex<i32> = Mutex::new(0i32);
     pub static ref UPDATES_N: Mutex<i32> = Mutex::new(0i32);
+    pub static ref QUERIES: &'static str = "Queries";
+    pub static ref INSERTS: &'static str = "Inserts";
+    pub static ref UPDATES: &'static str = "Updates";
+
+    pub static ref INSERTS_SLOW: Mutex<i32> = Mutex::new(0i32);
+    pub static ref QUERIES_SLOW: Mutex<i32> = Mutex::new(0i32);
+    pub static ref UPDATES_SLOW: Mutex<i32> = Mutex::new(0i32);
 }
 
 fn main() {
@@ -55,6 +63,8 @@ fn main() {
     for handle in handles {
         let _result = handle.join().unwrap();
     }
+
+    stats_reporter::print_slow_ops();
 }
 
 fn initialize_logging() {

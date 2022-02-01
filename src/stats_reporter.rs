@@ -1,9 +1,61 @@
-use crate::{Opt, INSERTS_N, QUERIES_N, UPDATES_N};
+use crate::{Opt, INSERTS_N, QUERIES_N, UPDATES_N, QUERIES_SLOW, INSERTS_SLOW, UPDATES_SLOW};
 use std::error::Error;
+use chrono::Duration as chrono_duration;
 use std::time::Duration;
 use tokio::time;
 
 const REPORT_FREQUENCY: u64 = 5000; //Report every 5 seconds
+
+pub fn record_ops_done(op_type: &str, count: i32)  {
+    match op_type {
+        "Inserts" => {
+            //Increment number of insert ops
+            let mut insert_num = INSERTS_N.lock().unwrap();
+            *insert_num += count;
+        },
+        "Updates" => {
+            //Increment number of update ops
+            let mut update_num = UPDATES_N.lock().unwrap();
+            *update_num += count;
+        },
+        "Queries" => {
+            //Increment number of insert ops
+            let mut query_num = QUERIES_N.lock().unwrap();
+            *query_num += count;
+        },
+        _ => {}
+    };
+}
+
+pub fn record_slow_ops(op_type: &str, threshold: &chrono_duration)  {
+    match op_type {
+        "Inserts" => {
+            //Increment number of insert ops
+            let mut insert_slow = INSERTS_SLOW.lock().unwrap();
+            *insert_slow += 1;
+        },
+        "Updates" => {
+            //Increment number of update ops
+            let mut update_slow = UPDATES_SLOW.lock().unwrap();
+            *update_slow += 1;
+        },
+        "Queries" => {
+            //Increment number of insert ops
+            let mut query_slow = QUERIES_SLOW.lock().unwrap();
+            *query_slow += 1;
+        },
+        _ => {}
+    };
+}
+
+pub fn print_slow_ops() {
+    info!("------------ Slow Ops during the run-----------");
+    info!("Number of slow inserts: {}", INSERTS_SLOW.lock().unwrap());
+    info!("Number of slow updates: {}", UPDATES_SLOW.lock().unwrap());
+    info!("Number of slow queries: {}", QUERIES_SLOW.lock().unwrap());
+    info!("-----------------------------------------------");
+}
+
 
 //TODO - there should be a better way to gather and print metrics
 #[tokio::main]
