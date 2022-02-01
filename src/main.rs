@@ -2,6 +2,7 @@
 extern crate log;
 extern crate log4rs;
 
+use std::process::Termination;
 use clap::lazy_static::lazy_static;
 use clap::Parser;
 use cli_helper::Opt;
@@ -70,7 +71,6 @@ fn main() {
 
 fn initialize_logging() {
     let stdout = ConsoleAppender::builder().build();
-    // log4rs::init_file("log4rs.yaml", Default::default()).unwrap();
     let config = Config::builder()
         .appender(Appender::builder().build("stdout", Box::new(stdout)))
         .build(Root::builder().appender("stdout").build(LevelFilter::Info))
