@@ -20,6 +20,7 @@ mod mongo_util;
 mod stats_reporter;
 
 //TODO Validate if the concurrent access is implemented idiomatically. Do I need to use Arc<T> ?
+//TODO use a better data structure instead of individual ?
 lazy_static! {
     pub static ref INSERTS_N: Mutex<i32> = Mutex::new(0i32);
     pub static ref QUERIES_N: Mutex<i32> = Mutex::new(0i32);
@@ -38,21 +39,22 @@ fn main() {
 
     // Parse CLI options
     let opt: Opt = Opt::parse();
+    let threads = opt.threads;
 
     // Initialize DB
-    let init_opt = Opt::parse();
+    let init_opt = opt.clone();
     let _init_result = mongo_load_gen::mongodb_init(init_opt);
 
-    let stats_handle = thread::spawn(|| {
-        let stat_opt = Opt::parse();
+    let stat_opt = opt.clone();
+    let stats_handle = thread::spawn(move || {
         let _stats_result = stats_reporter::print_stats(stat_opt);
     });
 
     let mut handles = Vec::new();
 
-    for i in 1..opt.threads + 1 {
+    for i in 0..threads {
+        let new_opt = opt.clone();
         let handle = thread::spawn(move || {
-            let new_opt = Opt::parse();
             let _result = mongo_load_gen::mongodb_load_gen(new_opt, i, opt.run_id_start);
         });
         handles.push(handle);
