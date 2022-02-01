@@ -60,7 +60,7 @@ pub async fn mongodb_load_gen(
     let mut sequence = run_id_start;
     while elapsed_seconds <= duration {
         let op = &op_weight[dist.sample(&mut rng)].0;
-        let mut op_type = "";
+        let op_type: &str;
         let op_start_time = chrono::Utc::now();
         match op {
             Insert => {
