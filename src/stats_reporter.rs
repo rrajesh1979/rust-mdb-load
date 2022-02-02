@@ -1,4 +1,6 @@
-use crate::{Opt, INSERTS_N, INSERTS_SLOW, QUERIES_N, QUERIES_SLOW, UPDATES_N, UPDATES_SLOW};
+use crate::{
+    Opt, ELAPSED_TIME, INSERTS_N, INSERTS_SLOW, QUERIES_N, QUERIES_SLOW, UPDATES_N, UPDATES_SLOW,
+};
 use chrono::Duration as chrono_duration;
 use std::error::Error;
 use std::time::Duration;
@@ -59,22 +61,23 @@ pub fn print_slow_ops() {
 //TODO - there should be a better way to gather and print metrics
 #[tokio::main]
 pub async fn print_stats(opt: Opt) -> Result<(), Box<dyn Error + Send + Sync>> {
-    let mut elapsed_seconds: i64 = 0;
     let duration: i64 = opt.duration as i64;
-    let start_time = chrono::Utc::now();
 
-    while elapsed_seconds <= duration {
+    loop {
         //TODO make interval configurable
         time::sleep(Duration::from_millis(REPORT_FREQUENCY)).await;
+        let elapsed_seconds = ELAPSED_TIME.lock().unwrap();
         info!(
             "------------ Stats after {} seconds -----------",
-            (chrono::Utc::now().timestamp() - start_time.timestamp())
+            (*elapsed_seconds)
         );
         info!("Number of inserts: {}", INSERTS_N.lock().unwrap());
         info!("Number of updates: {}", UPDATES_N.lock().unwrap());
         info!("Number of queries: {}", QUERIES_N.lock().unwrap());
         info!("-----------------------------------------------");
-        elapsed_seconds = chrono::Utc::now().timestamp() - start_time.timestamp();
+        if *elapsed_seconds >= duration {
+            break;
+        }
     }
 
     Ok(())

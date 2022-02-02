@@ -1,4 +1,4 @@
-use crate::{mongo_util, stats_reporter, Opt, INSERTS, QUERIES, UPDATES};
+use crate::{mongo_util, stats_reporter, Opt, INSERTS, QUERIES, UPDATES, ELAPSED_TIME};
 use bson::{doc, Document};
 use mongodb::Client;
 use std::error::Error;
@@ -34,7 +34,6 @@ pub async fn mongodb_load_gen(
     let (db, coll) = parse_namespace(&namespace);
     let database = client.database(&*db);
     let collection = database.collection(&*coll);
-    let mut elapsed_seconds: i64 = 0;
     let start_time = chrono::Utc::now();
 
     let op_weight = [
@@ -56,7 +55,7 @@ pub async fn mongodb_load_gen(
     let depth = opt.nest_depth;
     let num_fields = opt.num_fields;
     let mut sequence = run_id_start;
-    while elapsed_seconds <= duration {
+    loop {
         let op = &op_weight[dist.sample(&mut rng)].0;
         let op_type: &str;
         let op_start_time = chrono::Utc::now();
@@ -111,7 +110,11 @@ pub async fn mongodb_load_gen(
         if op_time.num_milliseconds() > 50 {
             stats_reporter::record_slow_ops(op_type, &op_time);
         }
-        elapsed_seconds = chrono::Utc::now().timestamp() - start_time.timestamp();
+        let mut elapsed_seconds = ELAPSED_TIME.lock().unwrap();
+        *elapsed_seconds = chrono::Utc::now().timestamp() - start_time.timestamp();
+        if *elapsed_seconds >= duration {
+            break;
+        }
     }
 
     Ok(())

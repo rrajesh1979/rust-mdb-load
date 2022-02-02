@@ -31,6 +31,7 @@ lazy_static! {
     pub static ref INSERTS_SLOW: Mutex<i32> = Mutex::new(0i32);
     pub static ref QUERIES_SLOW: Mutex<i32> = Mutex::new(0i32);
     pub static ref UPDATES_SLOW: Mutex<i32> = Mutex::new(0i32);
+    pub static ref ELAPSED_TIME: Mutex<i64> = Mutex::new(0i64);
 }
 
 fn main() {
