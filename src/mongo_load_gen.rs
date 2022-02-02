@@ -1,4 +1,4 @@
-use crate::{mongo_util, stats_reporter, Opt, INSERTS, QUERIES, UPDATES, ELAPSED_TIME};
+use crate::{mongo_util, stats_reporter, Opt, ELAPSED_TIME, INSERTS, QUERIES, UPDATES};
 use bson::{doc, Document};
 use mongodb::Client;
 use std::error::Error;
