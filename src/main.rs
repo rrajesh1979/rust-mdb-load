@@ -2,7 +2,6 @@
 extern crate log;
 extern crate log4rs;
 
-use std::process::Termination;
 use clap::lazy_static::lazy_static;
 use clap::Parser;
 use cli_helper::Opt;

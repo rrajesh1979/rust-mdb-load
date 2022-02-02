@@ -45,8 +45,6 @@ pub async fn mongodb_load_gen(
     let dist = WeightedIndex::new(op_weight.iter().map(|item| item.1)).unwrap();
     let mut rng = thread_rng();
 
-    let mut slow_ops = Vec::new();
-
     //TODO Worked around the Reference issue by splitting into scalar variables. Need to find out the right way to do
     let duration: i64 = opt.duration as i64;
     let mut binary = false;
@@ -88,17 +86,17 @@ pub async fn mongodb_load_gen(
             Update => {
                 //TODO Implement
                 let updated_int: u32 = rand::thread_rng().gen();
-                // info!("sequence {}", sequence);
                 let update_seq: usize = rand::thread_rng().gen_range(0..sequence);
-                // info!("update_seq {}", update_seq);
-                let updated_text = create_string(txt_len);
-                let updated_date = chrono::Utc::now();
+                // let updated_text = create_string(txt_len);
+                // let updated_date = chrono::Utc::now();
                 let filter = doc! { "_id": format!("w-{}-seq-{}", process_id, update_seq)};
+
+                //Modified to only one field being updated. Future - make this configurable.
                 let update_doc = doc! {
                     "$set": {
                         "fld0": updated_int,
-                        "fld2": updated_text,
-                        "fld1": updated_date
+                        // "fld2": updated_text,
+                        // "fld1": updated_date
                     }
                 };
                 let update_result = collection.update_one(filter, update_doc, None).await?;
@@ -112,13 +110,8 @@ pub async fn mongodb_load_gen(
         let op_time = op_end_time - op_start_time;
         if op_time.num_milliseconds() > 50 {
             stats_reporter::record_slow_ops(op_type, &op_time);
-            slow_ops.push((op, op_time));
         }
         elapsed_seconds = chrono::Utc::now().timestamp() - start_time.timestamp();
-    }
-
-    if !slow_ops.is_empty() {
-        info!("{} slow ops found", slow_ops.len());
     }
 
     Ok(())

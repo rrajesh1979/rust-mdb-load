@@ -68,7 +68,7 @@ pub async fn print_stats(opt: Opt) -> Result<(), Box<dyn Error + Send + Sync>> {
         time::sleep(Duration::from_millis(REPORT_FREQUENCY)).await;
         info!(
             "------------ Stats after {} seconds -----------",
-            elapsed_seconds
+            (chrono::Utc::now().timestamp() - start_time.timestamp())
         );
         info!("Number of inserts: {}", INSERTS_N.lock().unwrap());
         info!("Number of updates: {}", UPDATES_N.lock().unwrap());
