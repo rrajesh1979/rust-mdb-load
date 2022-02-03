@@ -8,6 +8,7 @@ use cli_helper::Opt;
 use log::LevelFilter;
 use log4rs::append::console::ConsoleAppender;
 use log4rs::config::{Appender, Root};
+use log4rs::encode::pattern::PatternEncoder;
 use log4rs::Config;
 use mongo_util::FieldTypes::{Date, Int, Text};
 use mongo_util::Ops::{Insert, Query, Update};
@@ -73,7 +74,11 @@ fn main() {
 }
 
 fn initialize_logging() {
-    let stdout = ConsoleAppender::builder().build();
+    let stdout = ConsoleAppender::builder()
+        .encoder(Box::new(PatternEncoder::new(
+            "{d(%Y-%m-%d %H:%M:%S)} [{t}] {h({l:5.15})} {M}: {m}{n}",
+        )))
+        .build();
     let config = Config::builder()
         .appender(Appender::builder().build("stdout", Box::new(stdout)))
         .build(Root::builder().appender("stdout").build(LevelFilter::Info))
