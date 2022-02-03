@@ -77,7 +77,7 @@ fn main() {
 fn initialize_logging() {
     let stdout = ConsoleAppender::builder()
         .encoder(Box::new(PatternEncoder::new(
-            "{d(%Y-%m-%d %H:%M:%S)} [{t}] {h({l:5.15})} : {m}{n} ",
+            "{d(%Y-%m-%d %H:%M:%S)} [{t}] {h({l:5.15})} : {m}{n}",
         )))
         .build();
     let config = Config::builder()
