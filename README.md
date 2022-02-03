@@ -53,6 +53,18 @@ brew update
 brew install rrajesh1979/tap/rust_mdb_load
 brew upgrade rrajesh1979/tap/rust_mdb_load
 
+brew upgrade rust_mdb_load
+==> Upgrading 1 outdated package:
+rrajesh1979/tap/rust_mdb_load 0.0.16 -> 0.0.17
+==> Downloading https://github.com/rrajesh1979/rust_mdb_load/releases/download/v0.0.17/rust_mdb_load-0.0.17-x8
+==> Downloading from https://objects.githubusercontent.com/github-production-release-asset-2e65be/453402124/fb
+######################################################################## 100.0%
+==> Upgrading rrajesh1979/tap/rust_mdb_load
+  0.0.16 -> 0.0.17
+
+🍺  /usr/local/Cellar/rust_mdb_load/0.0.17: 5 files, 9.9MB, built in 3 seconds
+==> Running `brew cleanup rust_mdb_load`...
+
 rust_mdb_load --help
 2022-01-30 10:13:54 [rust_mdb_load] INFO  rust_mdb_load: Initializing MongoDB load generator!
 rust_mdb_load 0.0.13

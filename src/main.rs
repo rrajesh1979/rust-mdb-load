@@ -25,13 +25,16 @@ lazy_static! {
     pub static ref INSERTS_N: Mutex<i32> = Mutex::new(0i32);
     pub static ref QUERIES_N: Mutex<i32> = Mutex::new(0i32);
     pub static ref UPDATES_N: Mutex<i32> = Mutex::new(0i32);
+
     pub static ref QUERIES: &'static str = "Queries";
     pub static ref INSERTS: &'static str = "Inserts";
     pub static ref UPDATES: &'static str = "Updates";
+
     pub static ref INSERTS_SLOW: Mutex<i32> = Mutex::new(0i32);
     pub static ref QUERIES_SLOW: Mutex<i32> = Mutex::new(0i32);
     pub static ref UPDATES_SLOW: Mutex<i32> = Mutex::new(0i32);
-    pub static ref ELAPSED_TIME: Mutex<i64> = Mutex::new(0i64);
+
+    pub static ref ELAPSED_TIME: Mutex<i64> = Mutex::new(0i64);     //TODO Is this efficient?
 }
 
 fn main() {
@@ -43,7 +46,7 @@ fn main() {
     let threads = opt.threads;
 
     // Initialize DB
-    let init_opt = opt.clone();
+    let init_opt = opt.clone();                             //TODO Is this the right way to clone and pass the struct to another function?
     let _init_result = mongo_load_gen::mongodb_init(init_opt);
 
     let stat_opt = opt.clone();
