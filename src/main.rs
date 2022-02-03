@@ -46,7 +46,7 @@ fn main() {
     let threads = opt.threads;
 
     // Initialize DB
-    let init_opt = opt.clone();                             //TODO Is this the right way to clone and pass the struct to another function?
+    let init_opt = opt.clone(); //TODO Is this the right way to clone and pass the struct to another function?
     let _init_result = mongo_load_gen::mongodb_init(init_opt);
 
     let stat_opt = opt.clone();
