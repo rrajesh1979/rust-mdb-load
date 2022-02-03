@@ -19,6 +19,7 @@ mod cli_helper;
 mod mongo_load_gen;
 mod mongo_util;
 mod stats_reporter;
+mod unit_tests;
 
 //TODO Validate if the concurrent access is implemented idiomatically. Do I need to use Arc<T> ?
 //TODO use a better data structure instead of individual ?
@@ -76,7 +77,7 @@ fn main() {
 fn initialize_logging() {
     let stdout = ConsoleAppender::builder()
         .encoder(Box::new(PatternEncoder::new(
-            "{d(%Y-%m-%d %H:%M:%S)} [{t}] {h({l:5.15})} {M}: {m}{n} ",
+            "{d(%Y-%m-%d %H:%M:%S)} [{t}] {h({l:5.15})} : {m}{n} ",
         )))
         .build();
     let config = Config::builder()
