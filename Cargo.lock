@@ -1002,7 +1002,7 @@ dependencies = [
 
 [[package]]
 name = "rust_mdb_load"
-version = "0.0.20"
+version = "0.0.21"
 dependencies = [
  "bson",
  "chrono",
