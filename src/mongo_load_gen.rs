@@ -18,7 +18,7 @@ pub async fn mongodb_init(opt: Opt) -> Result<(), Box<dyn Error + Send + Sync>> 
     let collection = database.collection::<Document>(&*coll);
     let delete_all_query = doc! {};
     let _db_init_result = collection.delete_many(delete_all_query, None).await?;
-        // .drop(None).await?;
+    // .drop(None).await?;
     info!("Clean-up of {}.{} completed!", &*db, &*coll);
 
     Ok(())
